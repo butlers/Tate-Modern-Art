@@ -12,3 +12,23 @@ GET http://localhost:13000/api/art/20400
 
 ### GET ART ENTRY BY ID THAT DOES NOT EXISTS
 GET http://localhost:13000/api/art/1
+
+
+### CREATE NEW USER (Happy Path)
+POST http://localhost:13000/api/users
+Content-Type: application/json
+
+{
+  "name": "Samuel Butler",
+  "age": 29,
+  "location": "San Francisco"
+}
+
+### TRY TO CREATE USER WITHOUT NAME OR USER ID (Should return 400 Bad Request)
+POST http://localhost:13000/api/users
+Content-Type: application/json
+
+{
+  "age": 30,
+  "location": "New York"
+}
