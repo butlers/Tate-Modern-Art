@@ -32,3 +32,59 @@ Content-Type: application/json
   "age": 30,
   "location": "New York"
 }
+
+### CREATE NEW COMMENT (Happy Path with userId)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "userID": 123,
+  "name": "John Doe",
+  "content": "This is a great piece of art!"
+}
+
+
+### CREATE NEW COMMENT (Happy Path, no userId but has Unique name)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "content": "I love this artwork!"
+}
+
+### CREATE NEW COMMENT (Pass - when non user comments once)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "name": "Tyler",
+  "content": "Another comment"
+}
+
+### CREATE NEW COMMENT (Failure - when non user comments again)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "name": "Tyler",
+  "content": "Another comment"
+}
+
+### CREATE NEW COMMENT (Pass - same name but id is presented)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "userID": 123,
+  "name": "John Doe",
+  "content": "Another comment"
+}
+
+### CREATE NEW COMMENT (Should fail due to missing content)
+POST http://localhost:13000/api/art/20400/comments
+Content-Type: application/json
+
+{
+  "name": "John Doe"
+}
