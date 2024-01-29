@@ -18,7 +18,8 @@ app.get('/setup-tables', async (req, res) => {
                 id SERIAL PRIMARY KEY,
                 artist VARCHAR(255) NOT NULL,
                 title VARCHAR(255) NOT NULL,
-                year INTEGER
+                year INTEGER,
+                comments JSONB DEFAULT '[]'::JSONB
             );
         `);
 
@@ -104,5 +105,60 @@ app.post('/api/users', async (req, res) => {
         res.sendStatus(500);
     }
 });
+
+app.post('/api/art/:id/comments', async (req, res) => {
+    const artId = req.params.id;
+    const { userID, name, content } = req.body;
+
+    try {
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+
+        let userVerification = true; // Assume user verification is successful by default
+
+        if (!userID && name) {
+            // If userID is not provided, verify that a user with the same name hasn't already left a comment
+            const existingComment = await pool.query(`
+                SELECT id
+                FROM comments
+                WHERE art_id = $1 AND name = $2 AND user_id IS NULL
+            `, [artId, name]);
+
+            if (existingComment.rows.length > 0) {
+                // User with the same name has already left a comment for this art entry
+                userVerification = false;
+            }
+        }
+
+        if (!userVerification) {
+            return res.status(400).json({ error: 'User with the same name has already left a comment' });
+        }
+
+        // Insert comment into the comments table
+        const commentResult = await pool.query(`
+            INSERT INTO comments (art_id, user_id, name, content)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, user_id, name, content;
+        `, [artId, userID, name, content]);
+
+        const newComment = commentResult.rows[0];
+
+        const updateResult = await pool.query(`
+            UPDATE art
+            SET comments = comments || $1::JSONB
+            WHERE id = $2
+            RETURNING *;
+        `, [{ id: newComment.id, name, content, userID }, artId]);
+
+        const updatedArt = updateResult.rows[0];
+
+        res.status(201).json(updatedArt);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
 
 app.listen(port, () => console.log(`Server has started on port: ${port}`))
