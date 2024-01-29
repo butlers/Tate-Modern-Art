@@ -1,0 +1,14 @@
+### SETUP ART TABELS
+GET http://localhost:13000/setup-tables
+
+### GET ART ENTRIES
+GET http://localhost:13000/api/art
+
+### INITIALIZE ART DATABASE
+GET http://localhost:13000/initialize-database
+
+### GET ART ENTRY BY ID THAT EXISTS
+GET http://localhost:13000/api/art/20400
+
+### GET ART ENTRY BY ID THAT DOES NOT EXISTS
+GET http://localhost:13000/api/art/1
