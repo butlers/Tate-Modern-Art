@@ -88,4 +88,21 @@ app.get('/api/art/:id', async (req, res) => {
     }
 });
 
+app.post('/api/users', async (req, res) => {
+    try {
+        const { name, age, location } = req.body;
+
+        if (!name || !age || !location) {
+            return res.status(400).json({ error: 'Name, age, and location are required.' });
+        }
+
+        const result = await pool.query('INSERT INTO users (name, age, location) VALUES ($1, $2, $3) RETURNING *', [name, age, location]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error creating new user:', error);
+        res.sendStatus(500);
+    }
+});
+
 app.listen(port, () => console.log(`Server has started on port: ${port}`))
