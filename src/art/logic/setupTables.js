@@ -6,8 +6,8 @@ async function setupTables() {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS art (
                 id SERIAL PRIMARY KEY,
-                artist VARCHAR(255) NOT NULL,
-                title VARCHAR(255) NOT NULL,
+                artist VARCHAR(500) NOT NULL,
+                title VARCHAR(500) NOT NULL,
                 year INTEGER,
                 comments JSONB DEFAULT '[]'::JSONB
             );
@@ -18,9 +18,9 @@ async function setupTables() {
             CREATE TABLE IF NOT EXISTS comments (
                 id SERIAL PRIMARY KEY,
                 art_id INTEGER REFERENCES art(id) ON DELETE CASCADE,
-                user_id VARCHAR(255),
-                name VARCHAR(255) NOT NULL,
-                content VARCHAR(255) NOT NULL
+                user_id VARCHAR(500),
+                name VARCHAR(500) NOT NULL,
+                content VARCHAR(500) NOT NULL
             );
         `);
 
@@ -28,9 +28,9 @@ async function setupTables() {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
+                name VARCHAR(500) NOT NULL,
                 age INTEGER NOT NULL,
-                location VARCHAR(255) NOT NULL
+                location VARCHAR(500) NOT NULL
             );
         `);
     } catch (err) {
