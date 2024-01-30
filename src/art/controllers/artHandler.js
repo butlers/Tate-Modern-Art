@@ -21,13 +21,18 @@ async function createUserHandler(req, res) {
 }
 
 async function getArtHandler(req, res) {
-    const result = await getArt();
-    if (result) {
+    const page = parseInt(req.query.page) || 1;
+    const entriesPerPage = parseInt(req.query.entriesPerPage) || 10;
+
+    try {
+        const result = await getArt(page, entriesPerPage);
         res.status(200).send(result);
-    } else {
+    } catch (err) {
+        console.error(err);
         res.sendStatus(500);
     }
 }
+
 
 async function getArtByIdHandler(req, res) {
     try {
