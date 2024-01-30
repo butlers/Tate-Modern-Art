@@ -5,45 +5,14 @@ const port = 3000;
 
 const app = express();
 
-const importData = require('./importData');
+const { setupTables, initializeDatabase } = require ('./setup');
 
 app.use(express.json());
 
 
 app.get('/setup-tables', async (req, res) => {
     try {
-        // Create art Table
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS art (
-                id SERIAL PRIMARY KEY,
-                artist VARCHAR(255) NOT NULL,
-                title VARCHAR(255) NOT NULL,
-                year INTEGER,
-                comments JSONB DEFAULT '[]'::JSONB
-            );
-        `);
-
-        // Create comments Table
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS comments (
-                id SERIAL PRIMARY KEY,
-                art_id INTEGER REFERENCES art(id) ON DELETE CASCADE,
-                user_id VARCHAR(255),
-                name VARCHAR(255) NOT NULL,
-                content VARCHAR(255) NOT NULL
-            );
-        `);
-
-        // Create users Table
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                age INTEGER NOT NULL,
-                location VARCHAR(255) NOT NULL
-            );
-        `);
-
+        await setupTables();
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
@@ -53,11 +22,11 @@ app.get('/setup-tables', async (req, res) => {
 
 app.get('/initialize-database', async (req, res) => {
     try {
-      await importData();
-      res.status(200).send({ message: 'Art Database initialized successfully.' });
-    } catch (error) {
-      console.error('Error initializing database:', error);
-      res.status(500).send({ error: 'Internal Server Error' });
+        await initializeDatabase();
+        res.status(200).send({ message: 'Art Database initialized successfully.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: 'Internal Server Error' });
     }
 });
 
