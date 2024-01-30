@@ -1,5 +1,4 @@
-const pool = require('./db');
-const importData = require('./importData');
+const pool = require('../db');
 
 async function setupTables() {
     try {
@@ -39,12 +38,4 @@ async function setupTables() {
     }
 }
 
-async function initializeDatabase() {
-    try {
-        await importData();
-      } catch (error) {
-        console.error('Error initializing database:', error);
-      }
-}
-
-module.exports = { setupTables, initializeDatabase };
+module.exports = { setupTables };
